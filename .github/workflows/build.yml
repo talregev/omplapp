@@ -26,6 +26,10 @@ jobs:
           triplet: x64-linux
           build_type: Release
           test_target: test
+        - os: macos-latest
+          triplet: arm64-osx
+          build_type: Release
+          test_target: test
 
     steps:
     - uses: actions/checkout@v4
