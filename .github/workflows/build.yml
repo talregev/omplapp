@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   default:
-    name: ${{ matrix.os }}-${{ matrix.arch }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -21,6 +21,12 @@ jobs:
         - os: windows-latest
           triplet: x64-windows-release
           build_type: Release
+          test_target: RUN_TESTS
+        - os: ubuntu-latest
+          triplet: x64-linux
+          build_type: Release
+          test_target: test
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -64,4 +70,4 @@ jobs:
     - name: test
       shell: bash
       run: |
-        cmake --build build --config ${{ matrix.build_type }} --target RUN_TESTS
+        cmake --build build --config ${{ matrix.build_type }} --target ${{ matrix.test_target }}
