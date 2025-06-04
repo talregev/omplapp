@@ -22,19 +22,32 @@ jobs:
           triplet: x64-windows-release
           build_type: Release
           test_target: RUN_TESTS
+          binary_cache: C:\Users\runneradmin\AppData\Local\vcpkg\archives
+          vcpkg_path: C:/vcpkg/installed/vcpkg/info/*
         - os: ubuntu-latest
           triplet: x64-linux
           build_type: Release
           test_target: test
+          binary_cache: /home/runner/.cache/vcpkg/archives
+          vcpkg_path: /usr/local/share/vcpkg/installed/vcpkg/info/*
         - os: macos-latest
           triplet: arm64-osx
           build_type: Release
           test_target: test
+          binary_cache: /Users/runner/.cache/vcpkg/archives
+          vcpkg_path: /usr/local/share/vcpkg/installed/vcpkg/info/*
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
+
+    - name: Restore cache dependencies
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ matrix.binary_cache }}
+        key: ${{ matrix.os }}
+        restore-keys: ${{ matrix.os }}
 
     - name: "Install dependencies"
       run: >
@@ -53,13 +66,26 @@ jobs:
         fcl
         pkgconf
 
+    - name: copy files for hash
+      shell: bash
+      run: |
+        mkdir -p vcpkg-info
+        cp ${{ matrix.vcpkg_path }} vcpkg-info
+
+    - name: Save cache dependencies
+      id: cache-save
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ matrix.binary_cache }}
+        key: ${{ matrix.os }}-${{ hashFiles('vcpkg-info/*') }}
+
     - name: cmake generate
       shell: bash
       run: >
         cmake -B build
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} 
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DOMPL_VERSIONED_INSTALL=OFF
         -DOMPL_BUILD_DEMOS=OFF
         -DOMPL_BUILD_PYBINDINGS=OFF
