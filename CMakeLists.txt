@@ -51,8 +51,6 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
-# Ensure dynamic linking with boost unit_test_framework
-add_definitions(-DBOOST_TEST_DYN_LINK)
 # Avoid valgrind error due to overflow error, cf. https://github.com/ompl/ompl/issues/664
 add_definitions(-DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS)
 
