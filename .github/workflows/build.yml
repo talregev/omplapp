@@ -51,7 +51,7 @@ jobs:
 
     - name: "Install dependencies"
       run: >
-        vcpkg x-set-installed --triplet ${{ matrix.triplet }}
+        vcpkg x-set-installed --triplet ${{ matrix.triplet }} --allow-unsupported
         assimp
         boost-dynamic-bitset
         boost-filesystem
@@ -65,6 +65,10 @@ jobs:
         eigen3
         fcl
         pkgconf
+        triangle
+        pqp
+        yaml-cpp
+        vcpkg-tool-castxml
 
     - name: copy files for hash
       shell: bash
